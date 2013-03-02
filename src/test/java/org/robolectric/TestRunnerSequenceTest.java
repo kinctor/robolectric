@@ -4,7 +4,8 @@ import android.app.Application;
 import org.junit.Test;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
-import org.robolectric.bytecode.Setup;
+import org.robolectric.bytecode.ShadowMap;
+import org.robolectric.internal.TestLifecycle;
 import org.robolectric.util.Transcript;
 
 import java.lang.reflect.Method;
@@ -37,58 +38,31 @@ public class TestRunnerSequenceTest {
 
     public static class Runner extends RobolectricTestRunner {
         public Runner(Class<?> testClass) throws InitializationError {
-            super(RobolectricContext.bootstrap(Runner.class, testClass, new RobolectricContext.Factory() {
-                @Override
-                public RobolectricContext create() {
-                    return new RobolectricContext() {
-                        @Override public Setup createSetup() {
-                            return new Setup() {
-                                @Override public boolean shouldAcquire(String name) {
-                                    if (name.equals(TestRunnerSequenceTest.class.getName())) return false;
-                                    return super.shouldAcquire(name);
-                                }
-                            };
-                        }
-
-                        @Override protected AndroidManifest createAppManifest() {
-                            return new AndroidManifest(resourceFile("TestAndroidManifest.xml"), resourceFile("res"), resourceFile("assets"));
-                        }
-                    };
-                }
-            }));
+            super(testClass);
         }
 
-        @Override protected void configureShadows(Method testMethod) {
+        @Override protected Class<? extends TestLifecycle> getTestLifecycleClass() {
+            return MyTestLifecycle.class;
+        }
+
+        @Override protected synchronized ShadowMap createShadowMap() {
             transcript.add("configureShadows");
-            super.configureShadows(testMethod);
+            return super.createShadowMap();
         }
 
-        @Override protected void resetStaticState() {
-            transcript.add("resetStaticState");
-        }
+        public static class MyTestLifecycle extends DefaultTestLifecycle {
+            @Override public void beforeTest(Method method) {
+                transcript.add("beforeTest");
+            }
 
-        @Override
-        public void setupApplicationState(Method testMethod) {
-            transcript.add("setupApplicationState");
-            super.setupApplicationState(testMethod);
-        }
+//            @Override protected void resetStaticState() {
+//                transcript.add("resetStaticState");
+//            }
 
-        @Override protected Application createApplication() {
-            transcript.add("createApplication");
-            return super.createApplication();
-        }
-
-        @Override public void beforeTest(Method method) {
-            transcript.add("beforeTest");
-        }
-
-        @Override public void prepareTest(Object test) {
-            transcript.add("prepareTest");
-            super.prepareTest(test);
-        }
-
-        @Override public void afterTest(Method method) {
-            transcript.add("afterTest");
+            @Override
+            public void setupApplicationState(Method testMethod) {
+                transcript.add("setupApplicationState");
+            }
         }
     }
 }
