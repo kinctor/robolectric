@@ -4,7 +4,7 @@ import android.app.Application;
 import org.junit.Test;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
-import org.robolectric.bytecode.ShadowMap;
+import org.robolectric.annotation.Config;
 import org.robolectric.internal.TestLifecycle;
 import org.robolectric.util.Transcript;
 
@@ -41,28 +41,46 @@ public class TestRunnerSequenceTest {
             super(testClass);
         }
 
+        @Override
+        protected AndroidManifest createAppManifest() {
+            return new AndroidManifest(resourceFile("TestAndroidManifest.xml"), resourceFile("res"), resourceFile("assets"));
+        }
+
         @Override protected Class<? extends TestLifecycle> getTestLifecycleClass() {
             return MyTestLifecycle.class;
         }
 
-        @Override protected synchronized ShadowMap createShadowMap() {
+        @Override protected void configureShadows(Config config) {
             transcript.add("configureShadows");
-            return super.createShadowMap();
+            super.configureShadows(config);
+        }
+    }
+
+    public static class MyTestLifecycle extends DefaultTestLifecycle {
+        @Override public Application createApplication(Method method) {
+            transcript.add("createApplication");
+            return super.createApplication(method);
         }
 
-        public static class MyTestLifecycle extends DefaultTestLifecycle {
-            @Override public void beforeTest(Method method) {
-                transcript.add("beforeTest");
-            }
+        @Override public void prepareTest(Object test) {
+            transcript.add("prepareTest");
+        }
+
+        @Override public void beforeTest(Method method) {
+            transcript.add("beforeTest");
+        }
 
 //            @Override protected void resetStaticState() {
 //                transcript.add("resetStaticState");
 //            }
 
-            @Override
-            public void setupApplicationState(Method testMethod) {
-                transcript.add("setupApplicationState");
-            }
+        @Override public void afterTest(Method method) {
+            transcript.add("afterTest");
+        }
+
+        @Override
+        public void setupApplicationState(Method testMethod) {
+            transcript.add("setupApplicationState");
         }
     }
 }

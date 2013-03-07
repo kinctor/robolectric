@@ -9,9 +9,9 @@ public interface TestLifecycle {
 
     Object createApplication(Method method);
 
+    void prepareTest(Object test);
+
     void beforeTest(Method method);
 
     void afterTest(Method method);
-
-    void prepareTest(Object test);
 }

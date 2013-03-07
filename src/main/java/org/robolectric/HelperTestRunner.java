@@ -8,20 +8,20 @@ import org.junit.runners.model.Statement;
 import org.robolectric.internal.TestLifecycle;
 
 public class HelperTestRunner extends BlockJUnit4ClassRunner {
-  private final TestLifecycle testLifecycle;
+    private final TestLifecycle testLifecycle;
 
-  public HelperTestRunner(Class<?> testClass, TestLifecycle testLifecycle) throws InitializationError {
+    public HelperTestRunner(Class<?> testClass, TestLifecycle testLifecycle) throws InitializationError {
         super(testClass);
-    this.testLifecycle = testLifecycle;
-  }
+        this.testLifecycle = testLifecycle;
+    }
 
-  @Override protected Object createTest() throws Exception {
-    Object test = super.createTest();
-    testLifecycle.prepareTest(test);
-    return test;
-  }
+    @Override protected Object createTest() throws Exception {
+        Object test = super.createTest();
+        testLifecycle.prepareTest(test);
+        return test;
+    }
 
-  @Override public Statement classBlock(RunNotifier notifier) {
+    @Override public Statement classBlock(RunNotifier notifier) {
         return super.classBlock(notifier);
     }
 

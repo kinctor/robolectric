@@ -53,9 +53,9 @@ public class DefaultTestLifecycle implements TestLifecycle {
      * <p/>
      * This method attempts to instantiate an application instance as specified by the AndroidManifest.xml.
      *
+     * @param method
      * @return An instance of the Application class specified by the ApplicationManifest.xml or an instance of
      *         Application if not specified.
-     * @param method
      */
     public Application createApplication(Method method) {
         return new ApplicationResolver(robolectricContext.getAppManifest()).resolveApplication();

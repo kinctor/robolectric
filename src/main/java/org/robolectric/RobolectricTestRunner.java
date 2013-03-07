@@ -225,6 +225,7 @@ public class RobolectricTestRunner extends BlockJUnit4ClassRunner {
     }
 
     private Dependency realAndroidDependency(String artifactId) {
+        // right now we only have real jars for Ice Cream Sandwich aka 4.1 aka API 16
         return createDependency("org.robolectric", artifactId, "4.1.2_r1_rc", "jar", "real");
     }
 
@@ -385,16 +386,9 @@ public class RobolectricTestRunner extends BlockJUnit4ClassRunner {
         databaseMap = null;
     }
 
-    /**
-     * You probably don't want to override this method. Override #prepareTest(Object) instead.
-     *
-     * @see BlockJUnit4ClassRunner#createTest()
-     */
     @Override
     public Object createTest() throws Exception {
-        Object test = super.createTest();
-        testLifecycle.prepareTest(test);
-        return test;
+        throw new UnsupportedOperationException("this should always be invoked on the HelperTestRunner!");
     }
 
     public static String determineResourceQualifiers(Method method) {
